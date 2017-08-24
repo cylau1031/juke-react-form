@@ -5,26 +5,31 @@ class NewPlaylist extends Component {
   constructor() {
     super()
     this.state = {
-      input: ''
+      input: '',
+      disabled: true,
+      edited: false
     }
     this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleChange(e) {
     const newValue = e.target.value
-    this.setState({input: newValue})
+    this.setState({ input: newValue, edited: true })
+    if (this.state.input.length === 0 || this.state.input.length > 16) {
+      this.setState({ disabled: true });
+    } else {
+      this.setState({ disabled: false });
+    }
   }
 
-  handleSubmit(e) {
-    console.log(this.state.input)
-    e.preventDefault()
-  }
-
-  render () {
+  render() {
     return (
       <div className="well">
-        <form className="form-horizontal" onSubmit={this.handleSubmit}>
+        <form className="form-horizontal" onSubmit={
+          (e) => {
+            this.props.handleSubmit(this.state.input, e)
+          }
+        }>
           <fieldset>
             <legend>New Playlist</legend>
             <div className="form-group">
@@ -35,7 +40,8 @@ class NewPlaylist extends Component {
             </div>
             <div className="form-group">
               <div className="col-xs-10 col-xs-offset-2">
-                <button type="submit" className="btn btn-success">Create Playlist</button>
+                <button type="submit" className="btn btn-success" disabled={this.state.disabled}>Create Playlist</button>
+                {(this.state.edited && this.state.disabled) && <div className="alert alert-warning">Please enter a name</div>}
               </div>
             </div>
           </fieldset>
